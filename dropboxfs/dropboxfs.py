@@ -14,7 +14,7 @@ from fs.time import datetime_to_epoch, epoch_to_datetime
 from fs.enums import ResourceType, Seek
 import six
 import logging
-
+import threading
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -25,6 +25,8 @@ class DropboxFile(BytesIO):
         self.dropbox = dropbox
         self.path = path
         self.mode = mode
+        self._lock = threading.RLock()
+
         initialData = None
         self.rev = None
         try:
@@ -37,7 +39,7 @@ class DropboxFile(BytesIO):
         except ApiError:
 
             pass
-        super().__init__(initialData)
+        super(DropboxFile, self).__init__(initialData)
         if self.mode.appending and initialData is not None:
             # seek to the end
             self.seek(len(initialData))
@@ -51,7 +53,7 @@ class DropboxFile(BytesIO):
 
     def truncate(self, size=None):
 
-        super().truncate(size)
+        super(DropboxFile, self).truncate(size)
         data_size = self.__length_hint__()
         if size and data_size < size:
             self.write(b'\0' * (size - data_size))
@@ -61,7 +63,7 @@ class DropboxFile(BytesIO):
     def close(self):
 
         if not self.mode.writing:
-            super().close()
+            super(DropboxFile, self).close()
             return
         if self.rev is None:
             writeMode = WriteMode("add")
@@ -73,20 +75,20 @@ class DropboxFile(BytesIO):
         self.path = None
         self.mode = None
         self.dropbox = None
-        super().close()
+        super(DropboxFile, self).close()
 
     def write(self, data):
         if self.mode.writing == False:
             raise IOError("File is not in write mode")
 
-        return super().write(data)
+        return super(DropboxFile, self).write(data)
 
     def read(self, size=None):
 
         if self.mode.reading == False:
             raise IOError("File is not in read mode")
 
-        return super().read(size)
+        return super(DropboxFile, self).read(size)
 
     def readable(self):
         return self.mode.reading
@@ -106,12 +108,18 @@ class DropboxFS(FS):
         'virtual': False,
     }
     def __init__(self, accessToken, session=None):
-        super().__init__()
+        super(DropboxFS, self).__init__()
+        self._lock = threading.RLock()
         self.dropbox = Dropbox(accessToken, session=session)
 
 
     def fix_path(self, path):
 
+        if isinstance(path,bytes):
+            try:
+                path = path.decode('utf-8')
+            except AttributeError:
+                pass
         if not path.startswith("/"):
             path = "/" + path
         if path == '.' or path == './':

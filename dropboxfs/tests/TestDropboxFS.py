@@ -1,9 +1,8 @@
+from __future__ import print_function
 from fs.test import FSTestCases
 from dropboxfs.dropboxfs import DropboxFS
 import unittest
-from uuid import uuid4
-from contextlib import contextmanager
-from fs.errors import *
+import os
 from dropbox import create_session
 
 def join(a, b):
@@ -16,12 +15,14 @@ class TestDropboxFS(FSTestCases,unittest.TestCase):
         # Return an instance of your FS object here
         self.access_token = 'Ozdb24UtqKAAAAAAAAAAC5-zHhrmCXEmdFWu9Dmj0PJrvWn-FCG23zLpt5k6OiGu'
 
+        if "DEV" in os.environ :
+            proxies = {'http': 'http://127.0.0.1:1087',
+                       'https': 'http://127.0.0.1:1087'}
 
-        proxies = {'http': 'http://127.0.0.1:1087',
-                   'https': 'http://127.0.0.1:1087'}
 
-
-        sess=create_session(8,proxies=proxies)
+            sess=create_session(8,proxies=proxies)
+        else:
+            sess=None
         fs=DropboxFS(self.access_token,session=sess)
 
         for f in fs.listdir('/'):

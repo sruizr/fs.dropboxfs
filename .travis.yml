@@ -1,7 +1,6 @@
 cache: pip
 
-services:
-  - docker
+
 
 language: python
 dist: trusty
@@ -22,9 +21,7 @@ matrix:
       python: 3.7
 
 
-before_install:
-  # Pull docker images early for a more responsive nosetests run
-  - echo zopyx/basex-86 zopyx/existdb-22 zopyx/existdb-30 | xargs -n1 docker pull
+
 
 install:
   - pip install -U pip setuptools wheel

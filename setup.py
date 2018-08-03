@@ -28,22 +28,22 @@ REQUIREMENTS = [
 ]
 
 setup(
-    author="Andreas Jung and others",
-    author_email="info@zopyx.com",
+    author="guojian.li",
+    author_email="guojianlee@qq.com",
     classifiers=CLASSIFIERS,
-    description="WebDAV support for pyfilesystem2",
+    description="Dropbox support for pyfilesystem2",
     entry_points={
-        'fs.opener': 'webdav = webdavfs.opener:WebDAVOpener'
+        'fs.opener': 'dropbox = dropbox.opener:DropboxOpener'
     },
     install_requires=REQUIREMENTS,
     license="MIT",
     long_description=DESCRIPTION + "\n" + HISTORY,
-    name='fs.webdavfs',
+    name='fs.dropboxfs',
     packages=find_packages(exclude=("tests",)),
     platforms=['any'],
     setup_requires=['nose'],
     tests_require=[],
-    test_suite='webdavfs.tests',
-    url="http://pypi.python.org/pypi/fs.webdavfs/",
-    version="0.3.4.3"
+    test_suite='dropboxfs.tests',
+    url="http://pypi.python.org/pypi/fs.dropboxfs/",
+    version="0.1.0.1"
 )

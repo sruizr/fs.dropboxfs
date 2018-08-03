@@ -6,7 +6,7 @@ from dropboxfs.tests.TestDropboxFS import TestDropboxFS
 def main():
     ts=TestDropboxFS()
     ts.fs=ts.make_fs()
-    ts.test_move_file_same_fs()
+    ts.test_unicode_path()
 
 if __name__ == '__main__':
     main()
