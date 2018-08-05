@@ -13,12 +13,15 @@ def join(a, b):
     return a + b
 
 
+DROPBOX_ACCESS_TOKEN = os.environ.get('DROPBOX_ACCESS_TOKEN')
+if not DROPBOX_ACCESS_TOKEN:
+    raise ValueError('No $DROPBOX_ACCESS_TOKEN configured')
+
+
 class TestDropboxFS(FSTestCases, unittest.TestCase):
     def make_fs(self):
         # Return an instance of your FS object here
-        self.access_token = (
-            "Ozdb24UtqKAAAAAAAAAAC5-zHhrmCXEmdFWu9Dmj0PJrvWn-FCG23zLpt5k6OiGu"
-        )
+        self.access_token = DROPBOX_ACCESS_TOKEN
 
         if "DEV" in os.environ:
             proxies = {
