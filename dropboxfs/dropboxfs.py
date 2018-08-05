@@ -1,26 +1,22 @@
+import logging
+import threading
 from contextlib import closing, contextmanager
 from datetime import datetime
 from io import BytesIO
+
 import dropbox
+import six
 from dropbox import Dropbox
-from dropbox.files import (
-    DownloadError,
-    FileMetadata,
-    FolderMetadata,
-    WriteMode,
-    LookupError,
-)
 from dropbox.exceptions import ApiError
-from fs.base import FS
+from dropbox.files import (DownloadError, FileMetadata, FolderMetadata,
+                           LookupError, WriteMode)
 from fs import errors
+from fs.base import FS
+from fs.enums import ResourceType, Seek
 from fs.info import Info
 from fs.mode import Mode
 from fs.subfs import SubFS
 from fs.time import datetime_to_epoch, epoch_to_datetime
-from fs.enums import ResourceType, Seek
-import six
-import logging
-import threading
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)

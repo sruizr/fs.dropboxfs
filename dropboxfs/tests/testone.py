@@ -1,4 +1,5 @@
 from fs.base import FS
+
 from dropboxfs.dropboxfs import DropboxFS
 from dropboxfs.tests.TestDropboxFS import TestDropboxFS
 

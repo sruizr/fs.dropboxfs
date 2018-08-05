@@ -1,9 +1,12 @@
 from __future__ import print_function
-from fs.test import FSTestCases
-from dropboxfs.dropboxfs import DropboxFS
-import unittest
+
 import os
+import unittest
+
 from dropbox import create_session
+from fs.test import FSTestCases
+
+from dropboxfs.dropboxfs import DropboxFS
 
 
 def join(a, b):
