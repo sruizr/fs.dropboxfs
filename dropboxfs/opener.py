@@ -7,7 +7,8 @@ class DropboxOpener(Opener):
     @staticmethod
     def open_fs(fs_url, parse_result, writeable, create, cwd):
         from .dropboxfs import DropboxFS
-        _, _, directory = parse_result.resource.partition('/')
+
+        _, _, directory = parse_result.resource.partition("/")
         fs = DropboxFS(accessToken=parse_result.params["access_token"])
 
         if directory:

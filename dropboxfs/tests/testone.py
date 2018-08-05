@@ -4,9 +4,10 @@ from dropboxfs.tests.TestDropboxFS import TestDropboxFS
 
 
 def main():
-    ts=TestDropboxFS()
-    ts.fs=ts.make_fs()
+    ts = TestDropboxFS()
+    ts.fs = ts.make_fs()
     ts.test_unicode_path()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

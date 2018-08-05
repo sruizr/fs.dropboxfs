@@ -3,7 +3,13 @@ from datetime import datetime
 from io import BytesIO
 import dropbox
 from dropbox import Dropbox
-from dropbox.files import DownloadError, FileMetadata, FolderMetadata, WriteMode, LookupError
+from dropbox.files import (
+    DownloadError,
+    FileMetadata,
+    FolderMetadata,
+    WriteMode,
+    LookupError,
+)
 from dropbox.exceptions import ApiError
 from fs.base import FS
 from fs import errors
@@ -15,6 +21,7 @@ from fs.enums import ResourceType, Seek
 import six
 import logging
 import threading
+
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 
@@ -34,7 +41,9 @@ class DropboxFile(BytesIO):
             self.rev = metadata.rev
             with closing(response):
 
-                if self.mode.appending or (self.mode.reading and not self.mode.truncate):
+                if self.mode.appending or (
+                    self.mode.reading and not self.mode.truncate
+                ):
                     initialData = response.content
         except ApiError:
 
@@ -45,9 +54,12 @@ class DropboxFile(BytesIO):
             self.seek(len(initialData))
 
     if six.PY2:
+
         def __length_hint__(self):
             return len(self.getvalue())
+
     else:
+
         def __length_hint__(self):
             return self.getbuffer().nbytes
 
@@ -56,7 +68,7 @@ class DropboxFile(BytesIO):
         super(DropboxFile, self).truncate(size)
         data_size = self.__length_hint__()
         if size and data_size < size:
-            self.write(b'\0' * (size - data_size))
+            self.write(b"\0" * (size - data_size))
             self.seek(data_size)
         return size or data_size
 
@@ -69,8 +81,14 @@ class DropboxFile(BytesIO):
             writeMode = WriteMode("add")
         else:
             writeMode = WriteMode("update", self.rev)
-        metadata = self.dropbox.files_upload(self.getvalue(), self.path, mode=writeMode, autorename=False,
-                                             client_modified=datetime.utcnow(), mute=False)
+        metadata = self.dropbox.files_upload(
+            self.getvalue(),
+            self.path,
+            mode=writeMode,
+            autorename=False,
+            client_modified=datetime.utcnow(),
+            mute=False,
+        )
 
         self.path = None
         self.mode = None
@@ -99,31 +117,31 @@ class DropboxFile(BytesIO):
 
 class DropboxFS(FS):
     _meta = {
-        'case_insensitive': False,
-        'invalid_path_chars': '\0',
-        'network': True,
-        'read_only': False,
-        'thread_safe': True,
-        'unicode_paths': True,
-        'virtual': False,
+        "case_insensitive": False,
+        "invalid_path_chars": "\0",
+        "network": True,
+        "read_only": False,
+        "thread_safe": True,
+        "unicode_paths": True,
+        "virtual": False,
     }
+
     def __init__(self, accessToken, session=None):
         super(DropboxFS, self).__init__()
         self._lock = threading.RLock()
         self.dropbox = Dropbox(accessToken, session=session)
 
-
     def fix_path(self, path):
 
-        if isinstance(path,bytes):
+        if isinstance(path, bytes):
             try:
-                path = path.decode('utf-8')
+                path = path.decode("utf-8")
             except AttributeError:
                 pass
         if not path.startswith("/"):
             path = "/" + path
-        if path == '.' or path == './':
-            path = '/'
+        if path == "." or path == "./":
+            path = "/"
         path = self.validatepath(path)
 
         return path
@@ -140,22 +158,11 @@ class DropboxFS(FS):
             }
         }
         if isinstance(metadata, FileMetadata):
-            rawInfo.update({
-                "details": {
-
-                    "size": metadata.size,
-                    "type": ResourceType.file
-                },
-
-            })
+            rawInfo.update(
+                {"details": {"size": metadata.size, "type": ResourceType.file}}
+            )
         else:
-            rawInfo.update({
-                "details": {
-
-                    "type": ResourceType.directory
-                },
-
-            })
+            rawInfo.update({"details": {"type": ResourceType.directory}})
 
         return Info(rawInfo)
 
@@ -163,19 +170,16 @@ class DropboxFS(FS):
         _path = self.fix_path(path)
         if _path == "/":
             info_dict = {
-                "basic": {
-                    "name": "",
-                    "is_dir": True
-                },
-                "details": {
-                    "type": ResourceType.directory
-                }
+                "basic": {"name": "", "is_dir": True},
+                "details": {"type": ResourceType.directory},
             }
             return Info(info_dict)
 
         try:
 
-            metadata = self.dropbox.files_get_metadata(_path, include_media_info=True)
+            metadata = self.dropbox.files_get_metadata(
+                _path, include_media_info=True
+            )
         except ApiError as e:
             raise errors.ResourceNotFound(path=path, exc=e)
         return self._infoFromMetadata(metadata)
@@ -187,11 +191,8 @@ class DropboxFS(FS):
     def listdir(self, path):
         _path = self.fix_path(path)
 
-
-
-
-        if _path == '/':
-            _path = ''
+        if _path == "/":
+            _path = ""
         if not self.exists(_path):
             raise errors.ResourceNotFound(path)
         meta = self.getinfo(_path)
@@ -205,14 +206,11 @@ class DropboxFS(FS):
             allEntries += result.entries
         return [x.name for x in allEntries]
 
-
-
-
     def makedir(self, path, permissions=None, recreate=False):
         path = self.fix_path(path)
         if self.exists(path) and not recreate:
             raise errors.DirectoryExists(path)
-        if path == '/':
+        if path == "/":
             return SubFS(self, path)
 
         if self.exists(path):
@@ -264,7 +262,6 @@ class DropboxFS(FS):
             if _mode.exclusive:
                 raise errors.FileExists(path)
 
-
         return DropboxFile(self.dropbox, path, mode)
 
     def remove(self, path):
@@ -284,7 +281,7 @@ class DropboxFS(FS):
     def removedir(self, path):
         _path = self.fix_path(path)
 
-        if _path == '/':
+        if _path == "/":
             raise errors.RemoveRootError()
 
         try:
@@ -299,8 +296,6 @@ class DropboxFS(FS):
                 raise errors.ResourceNotFound(path=path)
 
             raise errors.FileExpected(path=path, exc=e)
-
-
 
     def copy(self, src_path, dst_path, overwrite=False):
 
@@ -333,7 +328,8 @@ class DropboxFS(FS):
 
     def get_parent(self, dst_path):
         import os
-        parent_path = os.path.abspath(os.path.join(dst_path, '..'))
+
+        parent_path = os.path.abspath(os.path.join(dst_path, ".."))
         return parent_path
 
     def exists(self, path):
@@ -355,13 +351,13 @@ class DropboxFS(FS):
             raise errors.FileExpected(src_path)
         if not overwrite and self.exists(_dst_path):
             raise errors.DestinationExists(dst_path)
-        if '/' in dst_path and not self.exists(self.get_parent(_dst_path)):
+        if "/" in dst_path and not self.exists(self.get_parent(_dst_path)):
             raise errors.ResourceNotFound(src_path)
         with self._lock:
             try:
                 if overwrite:
                     try:
-                        #remove file anyways
+                        # remove file anyways
                         self.dropbox.files_delete_v2(_dst_path)
                     except Exception as e:
                         pass
