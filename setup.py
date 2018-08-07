@@ -33,7 +33,7 @@ setup(
     classifiers=CLASSIFIERS,
     description="Dropbox support for pyfilesystem2",
     entry_points={
-        'fs.opener': 'dropbox = dropbox.opener:DropboxOpener'
+        'fs.opener': 'dropbox = dropboxfs.opener:DropboxOpener'
     },
     install_requires=REQUIREMENTS,
     license="MIT",
@@ -45,5 +45,5 @@ setup(
     tests_require=[],
     test_suite='dropboxfs.tests',
     url="http://pypi.python.org/pypi/fs.dropboxfs/",
-    version="0.1.0.1"
+    version="0.2.0",
 )

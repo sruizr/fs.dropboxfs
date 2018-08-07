@@ -21,19 +21,7 @@ Use the ``fs.open_fs`` method with the ``webdav://`` protocol:
 .. code:: python
 
     >>> import fs
-    >>> handle = fs.open_fs('webdav://admin:admin@zopyx.com:22082/exist/webdav/db')
-
-or use the public constructor of the ``dropboxfs`` class:
-
-.. code:: python
-
-    >>> from dropboxfs.dropboxfs import dropboxfs
-    >>> url = 'http://zopyx.com:22082'
-    >>> root = '/exist/webdav/db'
-    >>> handle = dropboxfs(url, login='admin', password='admin', root)
-    >>> handle.makedir('foo')
-    >>> print(handle.listdir('.'))
-    ....
+    >>> handle = fs.open_fs('dropbox://dropbox.com?access_token=<dropbox access token>')
 
 Repository
 ----------
