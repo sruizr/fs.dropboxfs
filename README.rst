@@ -16,7 +16,7 @@ Supported Python versions
 Usage
 -----
 
-Use the ``fs.open_fs`` method with the ``webdav://`` protocol:
+Use the ``fs.open_fs`` method with the ``dropbox://`` protocol:
 
 .. code:: python
 
