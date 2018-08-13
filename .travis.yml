@@ -29,11 +29,11 @@ env:
 
 
 install:
-  - pip install -U pip setuptools wheel
+  - pip install -U pip setuptools wheel pytest-rerunfailures pytest
   - pip install .
 
 script:
-  - python setup.py test
+  - pytest --reruns 5  dropboxfs/tests/test_dropboxfs.py
 
 after_success:
   - coveralls
