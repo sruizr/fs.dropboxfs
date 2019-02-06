@@ -365,3 +365,6 @@ class DropboxFS(FS):
 
     def apierror_map(self, error):
         log.debug(error)
+
+    def geturl(self, path, purpose='download'):
+        self.dropbox.sharing_create_shared_link(path).url
