@@ -1,3 +1,4 @@
+
 import logging
 import threading
 from contextlib import closing, contextmanager
@@ -367,4 +368,4 @@ class DropboxFS(FS):
         log.debug(error)
 
     def geturl(self, path, purpose='download'):
-        self.dropbox.sharing_create_shared_link(path).url
+        return self.dropbox.sharing_create_shared_link(path).url
