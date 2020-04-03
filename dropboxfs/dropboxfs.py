@@ -368,4 +368,6 @@ class DropboxFS(FS):
         log.debug(error)
 
     def geturl(self, path, purpose='download'):
-        return self.dropbox.sharing_create_shared_link(path).url
+        url = self.dropbox.sharing_create_shared_link(path).url
+        url = url.replace('?dl=0', '?raw=1')
+        return url
